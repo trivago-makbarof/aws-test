@@ -10,7 +10,7 @@ cookbook_file "/etc/apache2/sites-available/010-apd.conf" do
   mode "0644"
 end
 
-execute 'symlink_apdr' do
+execute 'symlink_apd' do
   command 'ln -s /etc/apache2/sites-available/010-apd.conf /etc/apache2/sites-enabled/010-apd.conf'
 end
 
