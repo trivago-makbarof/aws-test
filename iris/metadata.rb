@@ -1,4 +1,4 @@
-name        "opsworks_stack_state_sync"
+name        "iris"
 description "Populates /etc/hosts and /etc/motd"
 maintainer  "AWS OpsWorks"
 license     "Apache 2.0"
