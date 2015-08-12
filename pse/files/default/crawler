@@ -1,0 +1,4 @@
+0 * * * * root ps aux | grep APD | sed 's/  / /g' | sed 's/  / /g' | sed 's/  / /g' | sed 's/  / /g' | cut -d" " -f2 | xargs sudo kill -9
+0 */2 * * * root  /usr/bin/php   /appdata/apd_data/live_data/app/console  tsp:APD:getProxies >> /tmp/push_proxy.log
+* * * * * root /usr/bin/php /appdata/apd_data/live_data/app/console tsp:APD:execute >> /tmp/check_proxy.log
+* * * * *   root  /usr/bin/php /appdata/apd_data/live_data/console.php crawler:cron >> /tmp/crawler
