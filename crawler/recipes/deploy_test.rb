@@ -1,4 +1,4 @@
-include_attribute "pse"
+include_recipe "pse"
 
 pse_deploy 'test' do 
   user node['deployer']['user']
