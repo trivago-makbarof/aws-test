@@ -1,5 +1,9 @@
 include_recipe 'pse::setup'
 
+appdata_path = '/apdata'
+www_path = ::File.join(appdata_path, 'www')
+release_directory = 'releases'
+
 # Virtual hosts
 cookbook_file "/etc/apache2/sites-available/010-crawler.conf" do
   owner "root"
@@ -29,16 +33,43 @@ cookbook_file "/etc/cron.d/crawler" do
 end
 
 # Apps directories
-directory "/appdata/crawler_data/releases" do
+Chef::Log.info %Q(Creating release directory for crawler)
+directory "#{appdata_path}/crawler_data/#{release_directory}" do
+  owner     node['deployer']['user']
+  group     node['deployer']['group']
+  mode      '0755'
+  recursive true
+end
+
+Chef::Log.info %Q(Creating release directory for apd)
+directory "#{appdata_path}/apd_data/#{release_directory}" do
+  owner     node['deployer']['user']
+  group     node['deployer']['group']
+  mode      '0755'
+  recursive true
+end
+
+Chef::Log.info %Q(Creating directory for crawler output)
+directory "#{appdata_path}/crawler_data/live_output" do
   owner     node['deployer']['user']
   group     node['deployer']['group']
   mode      '0755'
   recursive false
 end
 
-directory "/appdata/apd_data/releases" do
+
+Chef::Log.info %Q(Creating directory for crawler logs)
+directory "#{appdata_path}/crawler_data/live_logs" do
   owner     node['deployer']['user']
   group     node['deployer']['group']
   mode      '0755'
   recursive false
 end
+
+`setfacl -R -m u:"www-data":rwX -m u:#{node['deployer']['user']}:rwX #{appdata_path}/crawler_data/live_logs`
+`setfacl -dR -m u:"www-data":rwX -m u:#{node['deployer']['user']}:rwX #{appdata_path}/crawler_data/live_logs`
+
+Chef::Log.info %Q(Updating Symlink "#{symlink}")
+# Symlink overwriting seems to do some weird stuff, so remove it first...
+FileUtils::ln_s ::File.join(www_path, 'crawler.trivago.trv'), ::File.join(appdata_path, "crawler_data/live_data/web")
+FileUtils::ln_s ::File.join(www_path, 'tsp-apd.tspdev'), ::File.join(appdata_path, "apd_data/live_data/web")

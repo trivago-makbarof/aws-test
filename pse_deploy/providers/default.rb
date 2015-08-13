@@ -1,23 +1,8 @@
 require 'fileutils'
 
 
-action :deploy do
-  Chef::Log.info %Q(Deploying application "#{new_resource.app}")
-
-
-  # Ensure required attributes are not nil, otherwise error and return
-  required_attributes = [:app]
-  missing_attributes = required_attributes.keep_if { |attr| new_resource.send(attr).nil? }
-
-  if !missing_attributes.empty?
-    missing_attributes.each do |attr|
-      ::Chef::Log.error("#{new_resource.resource_name}[#{new_resource.name}] missing required attribute '#{attr}'")
-    end
-    return
-  end
-
-  t = Time.now
-
+action :prepare_release do
+  Chef::Log.info %Q(Preparing release for "#{new_resource.app}")
 
   app_user = new_resource.user
   app_group = new_resource.group
@@ -25,7 +10,7 @@ action :deploy do
   app = new_resource.app
   app_root = ::File.join(deploy_root, "#{app}_data")
   release_root = ::File.join(app_root, 'releases')
-  release_name = t.strftime("%Y%m%d%H%M%S")
+  release_name = new_resource.version
   Chef::Log.info %Q(Releasing version "#{release_name}")
   release_path = ::File.join(release_root, release_name)
   directory release_path do
@@ -36,8 +21,6 @@ action :deploy do
     action :create
   end
   build_file = ::File.join(node['deployer']['home'], "build.tar.gz")
-
-  symlink = ::File.join(app_root, 'live_data')
 
   ruby_block "build_install" do
     block do
@@ -50,11 +33,6 @@ action :deploy do
       Chef::Log.info %Q(Changing owner of "#{release_path}" to #{app_user}:#{app_group})
       `chown #{app_user}:#{app_group} -R #{release_path}`
 
-      Chef::Log.info %Q(Updating Symlink "#{symlink}")
-      # Symlink overwriting seems to do some weird stuff, so remove it first...
-      FileUtils::rm symlink, :force => true
-      FileUtils::ln_s release_path, symlink
-
 
       if ::File.exists? build_file
         Chef::Log.info "Removing build archive"
@@ -65,6 +43,31 @@ action :deploy do
         end
       end
 
+    end
+
+  end
+
+  new_resource.updated_by_last_action(true)
+end
+
+action :deploy do
+  Chef::Log.info %Q(Deploying application "#{new_resource.app}")
+  symlink = ::File.join(app_root, 'live_data')
+  deploy_root = new_resource.deploy_root
+  app = new_resource.app
+  app_root = ::File.join(deploy_root, "#{app}_data")
+  release_root = ::File.join(app_root, 'releases')
+  release_name = new_resource.version
+  Chef::Log.info %Q(Releasing version "#{release_name}")
+  release_path = ::File.join(release_root, release_name)
+  ruby_block "deploy_release" do
+    block do
+      Chef::Log.info %Q(Updating Symlink "#{symlink}")
+      # Symlink overwriting seems to do some weird stuff, so remove it first...
+      FileUtils::rm symlink, :force => true
+      FileUtils::ln_s release_path, symlink
+
+      `service apache2 restart`
     end
 
   end
