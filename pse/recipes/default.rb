@@ -1,0 +1,1 @@
+Chef::Log.info %Q(root_path in pse is "#{node['deploy']['root_path']}")
