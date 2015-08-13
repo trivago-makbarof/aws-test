@@ -1,7 +1,7 @@
 require 'fileutils'
 
 action :deploy do
-  log %Q(Deploying application "#{new_resource.app}")
+  Chef::Log.info %Q(Deploying application "#{new_resource.app}")
 
 
   # Ensure required attributes are not nil, otherwise error and return
