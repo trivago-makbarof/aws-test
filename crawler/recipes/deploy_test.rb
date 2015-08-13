@@ -1,3 +1,3 @@
-http_deploy 'app.test' do
+deploy 'test' do
   app 'test'
 end
