@@ -1,0 +1,1 @@
+default['deploy']['root_path']     = '/appdata'
