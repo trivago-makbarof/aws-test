@@ -1,6 +1,6 @@
 require 'fileutils'
 
-action :pse_deploy do
+action :deploy do
   log %Q(Deploying application "#{new_resource.app}")
 
 
