@@ -21,11 +21,12 @@ action :deploy do
 
   app_user = new_resource.user
   app_group = new_resource.group
-  deploy_root = '/appdata'
+  deploy_root = new_resource.deploy_root
   app = new_resource.app
   app_root = ::File.join(deploy_root, "#{app}_data")
   release_root = ::File.join(app_root, 'releases')
   release_name = t.strftime("%Y%m%d%H%M%S")
+  Chef::Log.info %Q(Releasing version "#{release_name}")
   release_path = ::File.join(release_root, release_name)
   directory release_path do
     owner app_user
