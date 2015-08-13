@@ -1,6 +1,6 @@
 include_recipe 'pse::setup'
 
-appdata_path = '/apdata'
+appdata_path = '/appdata'
 www_path = ::File.join(appdata_path, 'www')
 release_directory = 'releases'
 
@@ -34,7 +34,7 @@ end
 
 # Apps directories
 Chef::Log.info %Q(Creating release directory for crawler)
-directory "#{appdata_path}/crawler_data/#{release_directory}" do
+directory "#{appdata_path}/crawler_data/#{release_directory}/dummy/web" do
   owner     node['deployer']['user']
   group     node['deployer']['group']
   mode      '0755'
@@ -66,10 +66,11 @@ directory "#{appdata_path}/crawler_data/live_logs" do
   recursive false
 end
 
+FileUtils::ln_s ::File.join(appdata_path, "crawler_data/live_data"), "#{appdata_path}/crawler_data/#{release_directory}/dummy"
+
 `setfacl -R -m u:"www-data":rwX -m u:#{node['deployer']['user']}:rwX #{appdata_path}/crawler_data/live_logs`
 `setfacl -dR -m u:"www-data":rwX -m u:#{node['deployer']['user']}:rwX #{appdata_path}/crawler_data/live_logs`
 
-Chef::Log.info %Q(Updating Symlink "#{symlink}")
 # Symlink overwriting seems to do some weird stuff, so remove it first...
 FileUtils::ln_s ::File.join(www_path, 'crawler.trivago.trv'), ::File.join(appdata_path, "crawler_data/live_data/web")
 FileUtils::ln_s ::File.join(www_path, 'tsp-apd.tspdev'), ::File.join(appdata_path, "apd_data/live_data/web")
