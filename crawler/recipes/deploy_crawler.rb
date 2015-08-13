@@ -4,11 +4,12 @@ include_recipe "pse"
 t = Time.now
 version = t.strftime("%Y%m%d%H%M%S")
 
-pse_deploy:prepare_release 'crawler' do 
+pse_deploy 'crawler' do 
   user node['deployer']['user']
   group node['deployer']['group']
   deploy_root['deploy']['root_path']
   version version
+  action :prepare_release
 end
 
 
@@ -48,9 +49,10 @@ ruby_block "output_symlink" do
 end
 
 
-pse_deploy:deploy 'crawler' do 
+pse_deploy 'crawler' do 
   user node['deployer']['user']
   group node['deployer']['group']
   deploy_root['deploy']['root_path']
   version version
+  :deploy
 end

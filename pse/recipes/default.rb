@@ -1,1 +1,1 @@
-node.set['deploy']['root_path']
+node.set['deploy']['root_path'] = '/appdata'

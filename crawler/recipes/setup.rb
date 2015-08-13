@@ -66,7 +66,7 @@ directory "#{appdata_path}/crawler_data/live_logs" do
   recursive false
 end
 
-FileUtils::ln_s ::File.join(appdata_path, "crawler_data/live_data"), "#{appdata_path}/crawler_data/#{release_directory}/dummy"
+FileUtils::ln_s "#{appdata_path}/crawler_data/#{release_directory}/dummy", ::File.join(appdata_path, "crawler_data/live_data")
 
 `setfacl -R -m u:"www-data":rwX -m u:#{node['deployer']['user']}:rwX #{appdata_path}/crawler_data/live_logs`
 `setfacl -dR -m u:"www-data":rwX -m u:#{node['deployer']['user']}:rwX #{appdata_path}/crawler_data/live_logs`
