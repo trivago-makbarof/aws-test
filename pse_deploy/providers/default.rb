@@ -1,5 +1,6 @@
 require 'fileutils'
 
+
 action :deploy do
   Chef::Log.info %Q(Deploying application "#{new_resource.app}")
 
@@ -18,9 +19,9 @@ action :deploy do
   t = Time.now
 
 
-  app_user = node['deployer']['user']
-  app_group = node['deployer']['group']
-  deploy_root = node['deploy']['root_path']
+  app_user = new_resource.user
+  app_group = new_resource.group
+  deploy_root = new_resource.deploy_root
   app = new_resource.app
   app_root = ::File.join(deploy_root, "#{app}_data")
   release_root = ::File.join(app_root, 'releases')
