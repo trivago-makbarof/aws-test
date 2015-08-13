@@ -21,7 +21,7 @@ action :deploy do
 
   app_user = new_resource.user
   app_group = new_resource.group
-  deploy_root = new_resource.deploy_root
+  deploy_root = '/appdata'
   app = new_resource.app
   app_root = ::File.join(deploy_root, "#{app}_data")
   release_root = ::File.join(app_root, 'releases')
