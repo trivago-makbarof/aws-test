@@ -1,7 +1,7 @@
 require 'fileutils'
 
-action :deploy do
-  log %Q(Deploying build "#{new_resource.build}" for application "#{new_resource.application}")
+action :pse_deploy do
+  log %Q(Deploying application "#{new_resource.app}")
 
 
   # Ensure required attributes are not nil, otherwise error and return
