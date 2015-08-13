@@ -1,3 +1,1 @@
-pse_deploy 'test' do
-  app 'test'
-end
+pse_deploy 'test'
